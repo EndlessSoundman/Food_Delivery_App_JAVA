@@ -7,6 +7,14 @@ import dish.Dish;
 import dish.DishFactory;
 import dish.CheeseDecorator;
 import dish.ExtraSauceDecorator;
+import payment.PaymentStrategy;
+import payment.CreditCardPayment;
+import payment.PayPalPayment;
+import payment.CashOnDelivery;
+import discount.DiscountStrategy;
+import discount.PercentageDiscount;
+import discount.FlatDiscount;
+import discount.NoDiscount;
 
 /**
  * Main class - Entry point for the Food Delivery Application
@@ -135,6 +143,9 @@ public class Main {
         
         // Demonstrate Decorator Pattern
         demonstrateDecorators();
+        
+        // Demonstrate Payment and Discount Strategies
+        demonstratePaymentAndDiscountStrategies();
     }
     
     /**
@@ -155,6 +166,77 @@ public class Main {
         Dish pizzaWithCheeseAndSauce = new ExtraSauceDecorator(pizzaWithCheese);
         System.out.println("With Cheese + Sauce: " + pizzaWithCheeseAndSauce.getName() + " - $" + String.format("%.2f", pizzaWithCheeseAndSauce.getPrice()));
         
+        System.out.println();
+    }
+    
+    /**
+     * Demonstrate Payment and Discount Strategy Patterns
+     * Shows how different payment methods and discount strategies can be used
+     */
+    private static void demonstratePaymentAndDiscountStrategies() {
+        System.out.println("=== Payment & Discount Strategy Demo ===\n");
+        
+        // Create an example order with a dish
+        Dish orderDish = DishFactory.createDish("NON_VEG", "Pepperoni Pizza", 12.99, "Classic pepperoni pizza");
+        double orderTotal = orderDish.getPrice();
+        System.out.println("Order Item: " + orderDish.getName());
+        System.out.println("Original Price: $" + String.format("%.2f", orderTotal));
+        System.out.println();
+        
+        // Test all 3 discount strategies
+        System.out.println("--- Testing Discount Strategies ---");
+        
+        // Percentage Discount
+        DiscountStrategy percentDiscount = new PercentageDiscount(10);
+        double discountedPrice1 = percentDiscount.applyDiscount(orderTotal);
+        System.out.println("Price after discount: $" + String.format("%.2f", discountedPrice1));
+        System.out.println();
+        
+        // Flat Discount
+        DiscountStrategy flatDiscount = new FlatDiscount(2.0);
+        double discountedPrice2 = flatDiscount.applyDiscount(orderTotal);
+        System.out.println("Price after discount: $" + String.format("%.2f", discountedPrice2));
+        System.out.println();
+        
+        // No Discount
+        DiscountStrategy noDiscount = new NoDiscount();
+        double discountedPrice3 = noDiscount.applyDiscount(orderTotal);
+        System.out.println("Price after discount: $" + String.format("%.2f", discountedPrice3));
+        System.out.println();
+        
+        // Test all 3 payment methods
+        System.out.println("--- Testing Payment Strategies ---");
+        
+        // Credit Card Payment
+        PaymentStrategy creditCard = new CreditCardPayment("1234-5678-9012-3456", "John Doe");
+        System.out.print("Payment method: Credit Card - ");
+        creditCard.processPayment(discountedPrice1);
+        System.out.println();
+        
+        // PayPal Payment
+        PaymentStrategy paypal = new PayPalPayment("john.doe@example.com");
+        System.out.print("Payment method: PayPal - ");
+        paypal.processPayment(discountedPrice2);
+        System.out.println();
+        
+        // Cash on Delivery
+        PaymentStrategy cashOnDelivery = new CashOnDelivery();
+        System.out.print("Payment method: Cash on Delivery - ");
+        cashOnDelivery.processPayment(discountedPrice3);
+        System.out.println();
+        
+        // Show complete flow: Original price → Apply discount → Process payment
+        System.out.println("--- Complete Order Flow Example ---");
+        double originalPrice = 50.0;
+        System.out.println("Step 1 - Original Order Total: $" + String.format("%.2f", originalPrice));
+        
+        DiscountStrategy discount = new PercentageDiscount(15);
+        double finalPrice = discount.applyDiscount(originalPrice);
+        System.out.println("Step 2 - After 15% discount: $" + String.format("%.2f", finalPrice));
+        
+        PaymentStrategy payment = new CreditCardPayment("9876-5432-1098-7654", "Jane Smith");
+        System.out.print("Step 3 - Payment: ");
+        payment.processPayment(finalPrice);
         System.out.println();
     }
 }
