@@ -3,6 +3,10 @@ import java.util.List;
 import java.util.Scanner;
 import config.AppConfig;
 import restaurant.Restaurant;
+import dish.Dish;
+import dish.DishFactory;
+import dish.CheeseDecorator;
+import dish.ExtraSauceDecorator;
 
 /**
  * Main class - Entry point for the Food Delivery Application
@@ -98,34 +102,59 @@ public class Main {
     
     /**
      * Initialize sample data with restaurants and dishes
+     * Uses DishFactory to create dishes with different types
      */
     private static void initializeSampleData() {
         restaurants = new ArrayList<>();
         
         // Create Pizza Palace
         Restaurant pizzaPalace = new Restaurant("R001", "Pizza Palace");
-        pizzaPalace.addDish("Margherita Pizza");
-        pizzaPalace.addDish("Pepperoni Pizza");
-        pizzaPalace.addDish("Hawaiian Pizza");
-        pizzaPalace.addDish("Vegetarian Pizza");
+        pizzaPalace.addDish(DishFactory.createDish("VEG", "Margherita Pizza", 10.99, "Classic margherita with fresh tomatoes and mozzarella"));
+        pizzaPalace.addDish(DishFactory.createDish("NON_VEG", "Pepperoni Pizza", 12.99, "Classic pepperoni pizza"));
+        pizzaPalace.addDish(DishFactory.createDish("NON_VEG", "Hawaiian Pizza", 13.99, "Ham and pineapple pizza"));
+        pizzaPalace.addDish(DishFactory.createDish("VEG", "Vegetarian Pizza", 11.99, "Loaded with fresh vegetables"));
         restaurants.add(pizzaPalace);
         
         // Create Burger King
         Restaurant burgerKing = new Restaurant("R002", "Burger King");
-        burgerKing.addDish("Classic Burger");
-        burgerKing.addDish("Cheeseburger");
-        burgerKing.addDish("Bacon Burger");
-        burgerKing.addDish("Veggie Burger");
+        burgerKing.addDish(DishFactory.createDish("NON_VEG", "Classic Burger", 8.99, "Juicy beef patty with lettuce and tomato"));
+        burgerKing.addDish(DishFactory.createDish("NON_VEG", "Cheeseburger", 9.99, "Classic burger with melted cheese"));
+        burgerKing.addDish(DishFactory.createDish("NON_VEG", "Bacon Burger", 10.99, "Burger topped with crispy bacon"));
+        burgerKing.addDish(DishFactory.createDish("VEGAN", "Veggie Burger", 9.49, "Plant-based patty with fresh veggies"));
         restaurants.add(burgerKing);
         
         // Create Sushi Master
         Restaurant sushiMaster = new Restaurant("R003", "Sushi Master");
-        sushiMaster.addDish("Salmon Sashimi");
-        sushiMaster.addDish("California Roll");
-        sushiMaster.addDish("Dragon Roll");
-        sushiMaster.addDish("Tuna Nigiri");
+        sushiMaster.addDish(DishFactory.createDish("NON_VEG", "Salmon Sashimi", 15.99, "Fresh salmon sashimi slices"));
+        sushiMaster.addDish(DishFactory.createDish("VEG", "California Roll", 8.99, "Avocado, cucumber, and crab stick"));
+        sushiMaster.addDish(DishFactory.createDish("NON_VEG", "Dragon Roll", 12.99, "Eel and cucumber topped with avocado"));
+        sushiMaster.addDish(DishFactory.createDish("NON_VEG", "Tuna Nigiri", 6.99, "Fresh tuna on seasoned rice"));
         restaurants.add(sushiMaster);
         
         System.out.println("Sample data initialized: " + restaurants.size() + " restaurants loaded.\n");
+        
+        // Demonstrate Decorator Pattern
+        demonstrateDecorators();
+    }
+    
+    /**
+     * Demonstrate the Decorator Pattern by adding toppings to a dish
+     */
+    private static void demonstrateDecorators() {
+        System.out.println("=== Decorator Pattern Demo ===");
+        
+        // Create a base pizza dish
+        Dish pizza = DishFactory.createDish("NON_VEG", "Pepperoni Pizza", 12.99, "Classic pepperoni pizza");
+        System.out.println("Original: " + pizza.getName() + " - $" + String.format("%.2f", pizza.getPrice()));
+        
+        // Add cheese decorator
+        Dish pizzaWithCheese = new CheeseDecorator(pizza);
+        System.out.println("With Cheese: " + pizzaWithCheese.getName() + " - $" + String.format("%.2f", pizzaWithCheese.getPrice()));
+        
+        // Add sauce decorator to the pizza with cheese
+        Dish pizzaWithCheeseAndSauce = new ExtraSauceDecorator(pizzaWithCheese);
+        System.out.println("With Cheese + Sauce: " + pizzaWithCheeseAndSauce.getName() + " - $" + String.format("%.2f", pizzaWithCheeseAndSauce.getPrice()));
+        
+        System.out.println();
     }
 }
