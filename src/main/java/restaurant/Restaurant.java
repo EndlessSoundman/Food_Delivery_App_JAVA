@@ -2,6 +2,7 @@ package restaurant;
 
 import java.util.ArrayList;
 import java.util.List;
+import dish.Dish;
 
 /**
  * Restaurant class - Represents a restaurant in the food delivery system
@@ -9,7 +10,7 @@ import java.util.List;
 public class Restaurant {
     private String restaurantId;
     private String name;
-    private List<String> dishes;
+    private List<Dish> dishes;
     
     /**
      * Constructor to create a new Restaurant
@@ -24,18 +25,18 @@ public class Restaurant {
     
     /**
      * Add a dish to the restaurant's menu
-     * @param dishName Name of the dish to add
+     * @param dish Dish object to add
      */
-    public void addDish(String dishName) {
-        dishes.add(dishName);
+    public void addDish(Dish dish) {
+        dishes.add(dish);
     }
     
     /**
      * Get the restaurant's menu
-     * @return List of dish names
+     * @return List of dish objects
      */
-    public List<String> getMenu() {
-        return dishes;
+    public List<Dish> getMenu() {
+        return new ArrayList<>(dishes); // Return a copy to prevent external modification
     }
     
     /**
