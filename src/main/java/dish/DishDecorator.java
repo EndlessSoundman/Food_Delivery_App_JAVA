@@ -1,8 +1,13 @@
 package dish;
 
 /**
+ * DISABLED - Demo/Example class only, not used in the application
+ * 
  * DishDecorator - Abstract decorator class for Decorator Pattern
  * Allows adding additional features (toppings) to dishes dynamically
+ * 
+ * NOTE: This class and its implementations (CheeseDecorator, ExtraSauceDecorator)
+ * are kept for reference but are not used in the final application.
  */
 public abstract class DishDecorator implements Dish {
     protected Dish decoratedDish;

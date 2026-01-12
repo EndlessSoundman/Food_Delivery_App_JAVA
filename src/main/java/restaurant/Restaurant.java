@@ -33,31 +33,11 @@ public class Restaurant {
     
     /**
      * Get the restaurant's menu
-     * @return List of dishes
+     * @return List of dish objects
      */
     public List<Dish> getMenu() {
-        return dishes;
+        return new ArrayList<>(dishes); // Return a copy to prevent external modification
     }
-    
-    /**
-     * Display the restaurant's menu with dish names, prices, and types
-     */
-    public void displayMenu() {
-        System.out.println("\n=== " + name + " Menu ===");
-        if (dishes.isEmpty()) {
-            System.out.println("No dishes available.");
-        } else {
-            for (int i = 0; i < dishes.size(); i++) {
-                Dish dish = dishes.get(i);
-                System.out.println((i + 1) + ". " + dish.getName() + 
-                                 " - $" + String.format("%.2f", dish.getPrice()) + 
-                                 " (" + dish.getType() + ")");
-                System.out.println("   " + dish.getDescription());
-            }
-        }
-        System.out.println();
-    }
-    
     /**
      * Get the restaurant name
      * @return The restaurant name

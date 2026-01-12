@@ -1,8 +1,12 @@
 package discount;
 
 /**
+ * DISABLED - Demo/Example class only, not used in the application
+ * 
  * PercentageDiscount - Percentage-based discount strategy implementation
  * Part of Strategy Pattern for discount calculation
+ * 
+ * NOTE: This class is kept for reference but is not used in the final application.
  */
 public class PercentageDiscount implements DiscountStrategy {
     private double percentage;

@@ -1,8 +1,12 @@
 package discount;
 
 /**
+ * DISABLED - Demo/Example class only, not used in the application
+ * 
  * FlatDiscount - Flat amount discount strategy implementation
  * Part of Strategy Pattern for discount calculation
+ * 
+ * NOTE: This class is kept for reference but is not used in the final application.
  */
 public class FlatDiscount implements DiscountStrategy {
     private double discountAmount;
