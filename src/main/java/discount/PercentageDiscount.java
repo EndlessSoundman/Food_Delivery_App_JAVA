@@ -33,4 +33,12 @@ public class PercentageDiscount implements DiscountStrategy {
         System.out.println("Applied " + percentage + "% discount");
         return discountedPrice;
     }
+    
+    /**
+     * Get the discount percentage
+     * @return The discount percentage
+     */
+    public double getPercentage() {
+        return percentage;
+    }
 }

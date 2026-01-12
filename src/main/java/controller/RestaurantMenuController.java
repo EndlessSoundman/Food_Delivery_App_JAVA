@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.Scanner;
 import restaurant.Restaurant;
 import dish.Dish;
+import dish.VegDish;
+import dish.VeganDish;
+import dish.CheeseDecorator;
+import dish.ExtraSauceDecorator;
 import order.Order;
 import util.InputHandler;
 import util.DisplayFormatter;
@@ -79,7 +83,12 @@ public class RestaurantMenuController {
                 // Display all dishes with numbers, names, and prices
                 for (int i = 0; i < menu.size(); i++) {
                     Dish dish = menu.get(i);
-                    System.out.println((i + 1) + ". " + dish.getName() + 
+                    String dishName = dish.getName();
+                    // Add (VEG) label for vegetarian and vegan dishes
+                    if (dish instanceof VegDish || dish instanceof VeganDish) {
+                        dishName += " (VEG)";
+                    }
+                    System.out.println((i + 1) + ". " + dishName + 
                                      " - $" + DisplayFormatter.formatPrice(dish.getPrice()));
                 }
             }
@@ -95,11 +104,24 @@ public class RestaurantMenuController {
             }
             
             if (choice >= 1 && choice <= menu.size()) {
-                // User selected a dish - add it to order
+                // User selected a dish
                 Dish selectedDish = menu.get(choice - 1);
-                currentOrder.addDish(selectedDish, restaurant);
-                System.out.println("\n\n✓ Added \"" + selectedDish.getName() + 
-                                 "\" ($" + DisplayFormatter.formatPrice(selectedDish.getPrice()) + 
+                
+                // Check if restaurant supports decorators (Pizza Palace or Burger King)
+                boolean supportsDecorators = restaurant.getName().equals("Pizza Palace") || 
+                                            restaurant.getName().equals("Burger King");
+                
+                Dish dishToAdd = selectedDish;
+                
+                if (supportsDecorators) {
+                    // Show decorator options
+                    dishToAdd = showDecoratorOptions(selectedDish);
+                }
+                
+                // Add the dish (with or without decorators) to order
+                currentOrder.addDish(dishToAdd, restaurant);
+                System.out.println("\n\n✓ Added \"" + dishToAdd.getName() + 
+                                 "\" ($" + DisplayFormatter.formatPrice(dishToAdd.getPrice()) + 
                                  ") to your order.");
                 System.out.println("Current order total: $" + DisplayFormatter.formatPrice(currentOrder.calculateTotal()));
                 System.out.println("Items in cart: " + currentOrder.getItemCount() + "\n");
@@ -109,6 +131,40 @@ public class RestaurantMenuController {
             } else {
                 System.out.println("Invalid choice. Please try again.\n");
             }
+        }
+    }
+    
+    /**
+     * Show decorator options and return the decorated dish based on user choice
+     * @param baseDish The base dish to decorate
+     * @return The dish with selected decorators (or original if none selected)
+     */
+    private Dish showDecoratorOptions(Dish baseDish) {
+        System.out.println("\n--- Add Extras ---");
+        System.out.println("1. Extra Cheese (+$2.00)");
+        System.out.println("2. Extra Sauce (+$1.50)");
+        System.out.println("3. Extra Cheese + Extra Sauce (+$3.50)");
+        System.out.println("4. None");
+        
+        int decoratorChoice = InputHandler.readInt(scanner, "\nEnter your choice: ");
+        
+        if (decoratorChoice == -1) {
+            // Error occurred, return base dish
+            return baseDish;
+        }
+        
+        switch (decoratorChoice) {
+            case 1:
+                return new CheeseDecorator(baseDish);
+            case 2:
+                return new ExtraSauceDecorator(baseDish);
+            case 3:
+                // Apply both decorators: first cheese, then sauce
+                Dish withCheese = new CheeseDecorator(baseDish);
+                return new ExtraSauceDecorator(withCheese);
+            case 4:
+            default:
+                return baseDish;
         }
     }
 }

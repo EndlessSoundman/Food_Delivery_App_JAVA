@@ -1,12 +1,8 @@
 package dish;
 
 /**
- * DISABLED - Demo/Example class only, not used in the application
- * 
  * CheeseDecorator - Adds extra cheese to a dish
  * Part of Decorator Pattern implementation
- * 
- * NOTE: This class is kept for reference but is not used in the final application.
  */
 public class CheeseDecorator extends DishDecorator {
     

@@ -104,4 +104,33 @@ public class InputHandler {
         }
         return phone;
     }
+    
+    /**
+     * Read a valid credit card number with format validation (XXXX-XXXX-XXXX)
+     * @param scanner Scanner object for input
+     * @param prompt Prompt message to display
+     * @return The valid credit card number entered by user in format XXXX-XXXX-XXXX
+     */
+    public static String readCreditCardNumber(Scanner scanner, String prompt) {
+        String cardNumber = "";
+        boolean validCard = false;
+        
+        while (!validCard) {
+            System.out.print(prompt);
+            cardNumber = scanner.nextLine().trim();
+            if (cardNumber.isEmpty()) {
+                System.out.println("Card number is required. Please enter your card number.");
+                System.out.println("Format: XXXX-XXXX-XXXX (e.g., 1234-5678-9012)");
+            } else {
+                // Validate credit card format: XXXX-XXXX-XXXX (4 digits, dash, 4 digits, dash, 4 digits)
+                if (cardNumber.matches("^\\d{4}-\\d{4}-\\d{4}$")) {
+                    validCard = true;
+                } else {
+                    System.out.println("Invalid card number format. Please enter the card number in the correct format.");
+                    System.out.println("Format: XXXX-XXXX-XXXX (e.g., 1234-5678-9012)");
+                }
+            }
+        }
+        return cardNumber;
+    }
 }

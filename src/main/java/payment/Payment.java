@@ -9,6 +9,10 @@ import dish.Dish;
 import util.InputHandler;
 import util.DisplayFormatter;
 import user.User;
+import discount.DiscountStrategy;
+import discount.PercentageDiscount;
+import discount.FlatDiscount;
+import discount.NoDiscount;
 
 /**
  * Payment class - Handles payment processing for orders
@@ -74,8 +78,54 @@ public class Payment {
         System.out.println("\nOrder Items:");
         DisplayFormatter.displayGroupedDishes(groupedDishes);
         
-        double finalPrice = order.calculateTotal();
-        System.out.println("\nFinal Price: $" + DisplayFormatter.formatPrice(finalPrice));
+        double originalTotal = order.calculateTotal();
+        System.out.println("\nOriginal Total: $" + DisplayFormatter.formatPrice(originalTotal));
+        
+        // Display discount options and let user select
+        System.out.println("\n--- Select Discount ---");
+        System.out.println("1. No Discount - $" + DisplayFormatter.formatPrice(originalTotal));
+        
+        double priceWithPercent = calculateDiscountSilently(originalTotal, new PercentageDiscount(10));
+        System.out.println("2. 10% Discount - $" + DisplayFormatter.formatPrice(priceWithPercent));
+        
+        double priceWithFlat = calculateDiscountSilently(originalTotal, new FlatDiscount(2.0));
+        System.out.println("3. $2.00 Flat Discount - $" + DisplayFormatter.formatPrice(priceWithFlat));
+        
+        int discountChoice = InputHandler.readInt(scanner, "\nSelect discount option: ");
+        
+        DiscountStrategy selectedDiscount = null;
+        double finalPrice = originalTotal;
+        
+        if (discountChoice == -1) {
+            return false;
+        }
+        
+        switch (discountChoice) {
+            case 1:
+                selectedDiscount = new NoDiscount();
+                finalPrice = originalTotal;
+                System.out.println("\nSelected: No Discount");
+                break;
+            case 2:
+                selectedDiscount = new PercentageDiscount(10);
+                finalPrice = calculateDiscountSilently(originalTotal, selectedDiscount);
+                System.out.println("\nSelected: 10% Discount");
+                System.out.println("Discount Amount: $" + DisplayFormatter.formatPrice(originalTotal - finalPrice));
+                break;
+            case 3:
+                selectedDiscount = new FlatDiscount(2.0);
+                finalPrice = calculateDiscountSilently(originalTotal, selectedDiscount);
+                System.out.println("\nSelected: $2.00 Flat Discount");
+                System.out.println("Discount Amount: $" + DisplayFormatter.formatPrice(originalTotal - finalPrice));
+                break;
+            default:
+                System.out.println("Invalid discount selection. Using no discount.");
+                selectedDiscount = new NoDiscount();
+                finalPrice = originalTotal;
+                break;
+        }
+        
+        System.out.println("Final Price: $" + DisplayFormatter.formatPrice(finalPrice));
         
         // Payment method selection
         System.out.println("\nSelect Payment Method:");
@@ -94,8 +144,7 @@ public class Payment {
         switch (paymentChoice) {
             case 1:
                 paymentMethod = "Credit Card";
-                String cardNumber = InputHandler.readMandatoryString(scanner, "Enter card number *: ", 
-                    "Card number is required. Please enter your card number.");
+                String cardNumber = InputHandler.readCreditCardNumber(scanner, "Enter card number *: ");
                 String cardHolderName = InputHandler.readMandatoryString(scanner, "Enter cardholder name *: ", 
                     "Cardholder name is required. Please enter the cardholder name.");
                 paymentStrategy = new CreditCardPayment(cardNumber, cardHolderName);
@@ -141,8 +190,9 @@ public class Payment {
             return false;
         }
         
-        // Process payment
+        // Process payment with discount
         System.out.println("\n--- Processing Payment ---");
+        // Apply discount silently before processing payment
         boolean paymentSuccessful = paymentStrategy.processPayment(finalPrice);
         
         if (paymentSuccessful) {
@@ -153,7 +203,11 @@ public class Payment {
             System.out.println("\n✓ Payment processed successfully!");
             System.out.println("Payment ID: " + payment.getPaymentId());
             System.out.println("Payment Method: " + payment.getMethod());
-            System.out.println("Amount: $" + DisplayFormatter.formatPrice(payment.getAmount()));
+            System.out.println("Original Amount: $" + DisplayFormatter.formatPrice(originalTotal));
+            if (finalPrice < originalTotal) {
+                System.out.println("Discount Applied: $" + DisplayFormatter.formatPrice(originalTotal - finalPrice));
+            }
+            System.out.println("Final Amount: $" + DisplayFormatter.formatPrice(payment.getAmount()));
             System.out.println("\nOrder will be delivered to:");
             System.out.println("  Name: " + name);
             System.out.println("  Address: " + address);
@@ -189,6 +243,28 @@ public class Payment {
         } else {
             System.out.println("\nPayment processing failed. Please try again.\n");
             return false;
+        }
+    }
+    
+    /**
+     * Calculate discount price without printing messages
+     * @param originalPrice Original price
+     * @param discountStrategy Discount strategy to apply
+     * @return Discounted price
+     */
+    private static double calculateDiscountSilently(double originalPrice, DiscountStrategy discountStrategy) {
+        if (discountStrategy instanceof PercentageDiscount) {
+            PercentageDiscount pd = (PercentageDiscount) discountStrategy;
+            double percentage = pd.getPercentage();
+            double discountAmount = originalPrice * percentage / 100;
+            return originalPrice - discountAmount;
+        } else if (discountStrategy instanceof FlatDiscount) {
+            FlatDiscount fd = (FlatDiscount) discountStrategy;
+            double discountAmount = fd.getDiscountAmount();
+            double discountedPrice = originalPrice - discountAmount;
+            return discountedPrice < 0 ? 0 : discountedPrice;
+        } else {
+            return originalPrice;
         }
     }
 }

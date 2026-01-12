@@ -54,7 +54,10 @@ public class ShoppingCartController {
                 Map<String, List<Dish>> groupedDishes = currentOrder.getGroupedDishes();
                 DisplayFormatter.displayGroupedDishes(groupedDishes);
                 
-                System.out.println("\nTotal: $" + DisplayFormatter.formatPrice(currentOrder.calculateTotal()));
+                double originalTotal = currentOrder.calculateTotal();
+                
+                // Display prices with different discounts
+                displayDiscountOptions(originalTotal);
                 
                 // Show two options
                 System.out.println("\n1. Remove from shopping cart");
@@ -184,5 +187,47 @@ public class ShoppingCartController {
                 }
             }
         }
+    }
+    
+    /**
+     * Display discount options showing prices with different discount strategies
+     * @param originalTotal Original total price before discounts
+     */
+    private void displayDiscountOptions(double originalTotal) {
+        System.out.println("\n--- Pricing Options ---");
+        
+        // No Discount
+        double priceNoDiscount = originalTotal;
+        System.out.println("Price (No Discount): $" + DisplayFormatter.formatPrice(priceNoDiscount));
+        
+        // Percentage Discount (10%)
+        double pricePercentDiscount = calculatePercentageDiscount(originalTotal, 10.0);
+        System.out.println("Price (10% Discount): $" + DisplayFormatter.formatPrice(pricePercentDiscount));
+        
+        // Flat Discount ($2.00)
+        double priceFlatDiscount = calculateFlatDiscount(originalTotal, 2.0);
+        System.out.println("Price ($2.00 Flat Discount): $" + DisplayFormatter.formatPrice(priceFlatDiscount));
+    }
+    
+    /**
+     * Calculate percentage discount price
+     * @param originalPrice Original price
+     * @param percentage Discount percentage
+     * @return Discounted price
+     */
+    private double calculatePercentageDiscount(double originalPrice, double percentage) {
+        double discountAmount = originalPrice * percentage / 100;
+        return originalPrice - discountAmount;
+    }
+    
+    /**
+     * Calculate flat discount price
+     * @param originalPrice Original price
+     * @param discountAmount Flat discount amount
+     * @return Discounted price (never below 0)
+     */
+    private double calculateFlatDiscount(double originalPrice, double discountAmount) {
+        double discountedPrice = originalPrice - discountAmount;
+        return discountedPrice < 0 ? 0 : discountedPrice;
     }
 }

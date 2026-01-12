@@ -36,4 +36,12 @@ public class FlatDiscount implements DiscountStrategy {
         System.out.println("Applied $" + String.format("%.2f", discountAmount) + " flat discount");
         return discountedPrice;
     }
+    
+    /**
+     * Get the discount amount
+     * @return The flat discount amount
+     */
+    public double getDiscountAmount() {
+        return discountAmount;
+    }
 }
