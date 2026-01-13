@@ -1,18 +1,9 @@
 package payment;
 
-/**
- * CreditCardPayment - Credit card payment strategy implementation
- * Part of Strategy Pattern for payment processing
- */
 public class CreditCardPayment implements PaymentStrategy {
     private String cardNumber;
     private String cardHolderName;
     
-    /**
-     * Constructor to create a credit card payment strategy
-     * @param cardNumber The credit card number
-     * @param cardHolderName The name of the card holder
-     */
     public CreditCardPayment(String cardNumber, String cardHolderName) {
         this.cardNumber = cardNumber;
         this.cardHolderName = cardHolderName;
@@ -29,11 +20,6 @@ public class CreditCardPayment implements PaymentStrategy {
         return true;
     }
     
-    /**
-     * Mask the card number for security (show only last 4 digits)
-     * @param cardNumber The full card number
-     * @return Masked card number
-     */
     private String maskCardNumber(String cardNumber) {
         if (cardNumber == null || cardNumber.length() < 4) {
             return "****";

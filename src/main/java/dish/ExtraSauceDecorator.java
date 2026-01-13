@@ -1,15 +1,6 @@
 package dish;
 
-/**
- * ExtraSauceDecorator - Adds extra sauce to a dish
- * Part of Decorator Pattern implementation
- */
 public class ExtraSauceDecorator extends DishDecorator {
-    
-    /**
-     * Constructor to add extra sauce decoration to a dish
-     * @param dish The dish to add sauce to
-     */
     public ExtraSauceDecorator(Dish dish) {
         super(dish);
     }

@@ -1,15 +1,6 @@
 package dish;
 
-/**
- * CheeseDecorator - Adds extra cheese to a dish
- * Part of Decorator Pattern implementation
- */
 public class CheeseDecorator extends DishDecorator {
-    
-    /**
-     * Constructor to add cheese decoration to a dish
-     * @param dish The dish to add cheese to
-     */
     public CheeseDecorator(Dish dish) {
         super(dish);
     }

@@ -1,16 +1,7 @@
 package payment;
 
-/**
- * CashOnDelivery - Cash on delivery payment strategy implementation
- * Part of Strategy Pattern for payment processing
- */
 public class CashOnDelivery implements PaymentStrategy {
-    
-    /**
-     * Constructor for Cash on Delivery payment strategy
-     */
     public CashOnDelivery() {
-        // No fields needed for cash on delivery
     }
     
     @Override

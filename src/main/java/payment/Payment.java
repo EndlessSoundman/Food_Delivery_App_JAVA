@@ -12,59 +12,30 @@ import user.User;
 import discount.DiscountStrategy;
 import discount.PercentageDiscount;
 import discount.FlatDiscount;
-import discount.NoDiscount;
 
-/**
- * Payment class - Handles payment processing for orders
- * Utilizes PaymentStrategy pattern for different payment methods
- */
 public class Payment {
     private String paymentId;
     private double amount;
     private String method;
     
-    /**
-     * Constructor to create a Payment object
-     * @param paymentId Unique identifier for the payment
-     * @param amount Payment amount
-     * @param method Payment method name
-     */
     public Payment(String paymentId, double amount, String method) {
         this.paymentId = paymentId;
         this.amount = amount;
         this.method = method;
     }
     
-    /**
-     * Get the payment ID
-     * @return Payment ID
-     */
     public String getPaymentId() {
         return paymentId;
     }
     
-    /**
-     * Get the payment amount
-     * @return Payment amount
-     */
     public double getAmount() {
         return amount;
     }
     
-    /**
-     * Get the payment method
-     * @return Payment method name
-     */
     public String getMethod() {
         return method;
     }
     
-    /**
-     * Display payment window and handle payment processing
-     * @param order The order to process payment for
-     * @param scanner Scanner for user input
-     * @return true if payment was successful, false otherwise
-     */
     public static boolean displayPaymentWindow(Order order, Scanner scanner) {
         if (order.getItemCount() == 0) {
             System.out.println("\nCart is empty.");
@@ -72,16 +43,11 @@ public class Payment {
         }
         
         System.out.println("\n\n=== Payment ===");
-        
-        // Display all dishes with prices
         Map<String, List<Dish>> groupedDishes = order.getGroupedDishes();
         System.out.println("\nOrder Items:");
         DisplayFormatter.displayGroupedDishes(groupedDishes);
-        
         double originalTotal = order.calculateTotal();
         System.out.println("\nOriginal Total: $" + DisplayFormatter.formatPrice(originalTotal));
-        
-        // Display discount options and let user select
         System.out.println("\n--- Select Discount ---");
         System.out.println("1. No Discount - $" + DisplayFormatter.formatPrice(originalTotal));
         
@@ -102,7 +68,6 @@ public class Payment {
         
         switch (discountChoice) {
             case 1:
-                selectedDiscount = new NoDiscount();
                 finalPrice = originalTotal;
                 System.out.println("\nSelected: No Discount");
                 break;
@@ -120,14 +85,11 @@ public class Payment {
                 break;
             default:
                 System.out.println("Invalid discount selection. Using no discount.");
-                selectedDiscount = new NoDiscount();
                 finalPrice = originalTotal;
                 break;
         }
         
         System.out.println("Final Price: $" + DisplayFormatter.formatPrice(finalPrice));
-        
-        // Payment method selection
         System.out.println("\nSelect Payment Method:");
         System.out.println("1. Credit Card");
         System.out.println("2. PayPal");
@@ -162,44 +124,26 @@ public class Payment {
                 System.out.println("Invalid payment method selection.");
                 return false;
         }
-        
-        // Collect user information
         System.out.println("\n--- Customer Information ---");
-        
-        // Get name (mandatory)
         String name = InputHandler.readMandatoryString(scanner, "Name *: ", 
             "Name is required. Please enter your name.");
-        
-        // Get address (mandatory)
         String address = InputHandler.readMandatoryString(scanner, "Address *: ", 
             "Address is required. Please enter your address.");
-        
-        // Get phone number (mandatory, numbers only)
         String phone = InputHandler.readMandatoryPhoneNumber(scanner, "Phone Number *: ", 
             "Phone number is required. Please enter your phone number.");
-        
-        // Get email (optional)
         System.out.print("Email: ");
         String email = scanner.nextLine().trim();
-        
-        // Confirmation prompt
         System.out.print("\nPlace order? (yes/no): ");
         String confirm = scanner.nextLine().trim().toLowerCase();
         if (!confirm.equals("yes") && !confirm.equals("y")) {
             System.out.println("\nOrder cancelled.\n");
             return false;
         }
-        
-        // Process payment with discount
         System.out.println("\n--- Processing Payment ---");
-        // Apply discount silently before processing payment
         boolean paymentSuccessful = paymentStrategy.processPayment(finalPrice);
-        
         if (paymentSuccessful) {
-            // Generate payment ID (simple implementation)
             String paymentId = "PAY" + System.currentTimeMillis();
             Payment payment = new Payment(paymentId, finalPrice, paymentMethod);
-            
             System.out.println("\n✓ Payment processed successfully!");
             System.out.println("Payment ID: " + payment.getPaymentId());
             System.out.println("Payment Method: " + payment.getMethod());
@@ -215,24 +159,13 @@ public class Payment {
             if (!email.isEmpty()) {
                 System.out.println("  Email: " + email);
             }
-            
-            // Create a new user with the provided information
-            String userId = "U" + System.currentTimeMillis();
-            User orderUser = new User(userId, name, email.isEmpty() ? phone + "@order.com" : email);
-            
-            // Create a copy of the order for tracking with the actual user
+            User orderUser = new User(name);
             String newOrderId = "ORD" + System.currentTimeMillis();
             Order placedOrder = new Order(newOrderId, orderUser);
-            
-            // Copy all dishes from the current order
             for (Dish dish : order.getDishes()) {
                 placedOrder.addDish(dish, order.getRestaurantForDish(dish));
             }
-            
-            // Add order to OrderStatus (sets status to PLACED automatically)
             OrderStatus.addOrder(placedOrder);
-            
-            // Clear the shopping cart after successful order placement
             order.clearOrder();
             
             System.out.println("\n✓ Order placed successfully!");
@@ -246,12 +179,6 @@ public class Payment {
         }
     }
     
-    /**
-     * Calculate discount price without printing messages
-     * @param originalPrice Original price
-     * @param discountStrategy Discount strategy to apply
-     * @return Discounted price
-     */
     private static double calculateDiscountSilently(double originalPrice, DiscountStrategy discountStrategy) {
         if (discountStrategy instanceof PercentageDiscount) {
             PercentageDiscount pd = (PercentageDiscount) discountStrategy;

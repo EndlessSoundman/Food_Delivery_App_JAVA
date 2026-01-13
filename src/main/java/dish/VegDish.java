@@ -1,20 +1,10 @@
 package dish;
 
-/**
- * VegDish - Represents a vegetarian dish
- * Implements Dish interface as part of Factory Pattern
- */
 public class VegDish implements Dish {
     private String name;
     private double price;
     private String description;
     
-    /**
-     * Constructor to create a vegetarian dish
-     * @param name Name of the dish
-     * @param price Price of the dish
-     * @param description Description of the dish
-     */
     public VegDish(String name, double price, String description) {
         this.name = name;
         this.price = price;
